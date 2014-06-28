@@ -1,14 +1,15 @@
 class ProductsController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
-  # respond_to :json
+  respond_to :json
   def index
     @products = Product.all()
-    render "index"
   end
 
   def create
-    product = params[:client]
-    product_create = Product.create(product)
+    product_create = Product.new
+    product_create.id = nil
+    product_create.name = params[:name]
+    product_create.save()
     response.status = 201
     response.location = url_for product_create
     render :nothing => true
@@ -16,7 +17,6 @@ class ProductsController < ApplicationController
 
   def show
     @product = Product.find(params[:id])
-    render "show"
   end
 
 

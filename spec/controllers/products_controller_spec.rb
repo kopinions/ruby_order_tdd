@@ -13,7 +13,7 @@ describe ProductsController do
     it "should create a product" do
       post :create, {:format => :json, :product => {:name => "name"}}
       expect(response.status).to eq(201)
-      expect(response.location).to end_with("/products/1")
+      expect(response.location).to end_with("/products/980190963")
     end
   end
 
