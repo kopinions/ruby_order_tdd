@@ -6,9 +6,7 @@ class ProductsController < ApplicationController
   end
 
   def create
-    product_create = Product.new
-    product_create.id = nil
-    product_create.name = params[:name]
+    product_create = Product.new(product_params)
     product_create.save()
     response.status = 201
     response.location = url_for product_create
@@ -24,4 +22,8 @@ class ProductsController < ApplicationController
     response.status = 404
   end
 
+  private
+    def product_params
+      params.permit(:name)
+    end
 end

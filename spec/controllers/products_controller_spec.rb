@@ -11,7 +11,9 @@ describe ProductsController do
 
   describe "create product" do
     it "should create a product" do
-      post :create, {:format => :json, :product => {:name => "name"}}
+      expect(Product).to receive(:new).with({:name => "name"}).and_call_original
+      expect_any_instance_of(Product).to receive(:save).once.and_call_original
+      post :create, {:format => :json, :name => "name"}
       expect(response.status).to eq(201)
       expect(response.location).to end_with("/products/980190963")
     end
@@ -24,7 +26,7 @@ describe ProductsController do
     end
 
     it "should return 200 when find a product" do
-      Product.stub(:find).with("1").and_return(Product.new(:name => "name", :id => 1))
+      expect(Product).to receive(:find) {Product.new(:name => "name", :id => 1)}
       get :show, :id => 1, :format => :json
       expect(response.status).to eq(200)
       product_detail = JSON.parse(response.body)
