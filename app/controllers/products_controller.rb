@@ -9,7 +9,7 @@ class ProductsController < ApplicationController
     product_create = Product.new(product_params)
     product_create.save()
     response.status = 201
-    response.location = url_for product_create
+    response.location = product_url product_create
     render :nothing => true
   end
 

@@ -11,8 +11,8 @@ describe ProductsController do
 
   describe 'create product' do
     it 'should create a product' do
-      expect(Product).to receive(:new).with({:name => 'name'}).and_call_original
-      expect_any_instance_of(Product).to receive(:save).once.and_call_original
+      expect(Product).to receive(:new).with({:name => 'name'}).and_return(Product.new(:name=> 'name', :id=> 1))
+      expect_any_instance_of(Product).to receive(:save).once.and_return(true)
       post :create, {:format => :json, :name => 'name'}
       expect(response.status).to eq(201)
       expect(response.location).to end_with('/products/1')
