@@ -15,7 +15,7 @@ describe ProductsController do
       expect_any_instance_of(Product).to receive(:save).once.and_call_original
       post :create, {:format => :json, :name => "name"}
       expect(response.status).to eq(201)
-      expect(response.location).to end_with("/products/980190963")
+      expect(response.location).to end_with("/products/1")
     end
   end
 
