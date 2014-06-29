@@ -1,28 +1,106 @@
-== README
+### 配置rspec环境
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+1. echo 'gem "rspec-rails", :group => [:development, :test]' >> Gemfile
+2. bundle install
+3. rails generate rspec:install
+4. rails generate scaffold product
+5. rails generate rspec:controller product 为product controller生成测试文件
+6. rake db:migrate && rake db:test:prepare
+7. rake spec
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+测试中总是会出现： circular require considered harmful  
+此时可以修改.rspec文件，将该文件中的--warnings配置删除
 
 
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+### 用rspec测试api的时候经常会出现以下现象：
+
+1. 在浏览器中返回结果正常
+2. 在rspec中死活都接受不到json数据
+
+此时可以加入下面一条语句：render_views
+
+```
+describe ProductController do
+	render_views
+end
+
+```
+
+### rails rspect testing double
+[rspec-mocks](https://github.com/rspec/rspec-mocks)
+
+```
+expect(Product).to receive(:new).with({:name => "name"}).and_call_original
+expect_any_instance_of(Product).to receive(:save).once.and_call_original
+expect(Product).to receive(:find) {Product.new(:name => "name", :id => 1)}
+当需要stub一个find的exception的时候
+expect(Price).to receive(:find).with(2).and_raise(ActiveRecord::RecordNotFound)
+```
+### Rails Rabl
+
+###### 1. 返回detail对象，不包括根对象
+
+```
+object false
+node(:name){ @product.name}
+node(:id) {@product.id}
+```
+###### 2. 返回集合对象，但是集合中的对象不需要有root对象
+```
+collection @prices, :object_root=>false
+```
+
+###### 3. 返回对象的uri
+```
+object false
+node("price") {@price.price}
+node :uri do
+    product_price_url
+end
+```
+###### 4. 返回集合对象的uri
+```
+collection @prices, :object_root=>false
+attributes :price, :id
+node :uri do |price|
+    product_price_url :id => price.id
+end
+```
+
+
+### rails postgresql
+###### 1. rails new myapp --database=postgresql
+###### 2. bundle install
+其中有可能出问题的是
+
+1. ERROR: Failed to build gem native extension  checking for pg_config... no
+此时是因为postgres的配置程序找不到的原因，可以配置postgres的bin的路径到path中，然后再次安装就可以了
+2. pg_ext.bundle: [BUG] Segmentation fault
+此时有可能是因为在1.9.3环境下装的pg，所以pg是使用1.9.3的环境来编译的，但是如果切换到2.1.1的ruby环境，此时就会发现1.9.3编译的pg，是不能用的，所以就会报段错误。
+
+
+###### 3. createuser test0629 -P -d   
+-d的意思是可以允许test0629创建新的database  
+-P的意思指定密码，可以允许test0629登录
+###### 4. 配置database.yml文件,加入usename和password配置，配置好的文件如下  
+
+```
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  database: ruby-development
+  pool: 5
+  username: test0629
+  password: test0629
+
+development:
+  <<: *default
+  datebase: ruby-test
+```  
+
+###### 5. rake db:setup 此时rails就可以将database setup起来
+###### 6. rails generate model Model name:string
+###### 7. rake db:migrate 此时所有的db的工作就完成了
+
+
+
