@@ -1,10 +1,15 @@
 class PricesController < ApplicationController
   before_action :set_price, only: [:show]
+  include ActionController::UrlFor
+  include Rails.application.routes.url_helpers
+
   def show
   end
 
   def index
-    @prices = Price.all()
+    price_all = Price.all()
+    @prices = price_all
+    puts product_prices_url
   end
 
   private
