@@ -3,6 +3,10 @@ class PricesController < ApplicationController
   def show
   end
 
+  def index
+    @prices = Price.all()
+  end
+
   private
     def set_price
       begin

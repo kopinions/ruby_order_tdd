@@ -15,6 +15,15 @@ describe PricesController do
       expect(Price).to receive(:find).with(2).and_raise(ActiveRecord::RecordNotFound)
       get :show, {:format => :json, :id=> 2, :product_id=> 1}
       expect(response.status).to eq(404)
+      end
+  end
+  describe 'get all price of product' do
+    it 'should get all prices of the product' do
+      expect(Price).to receive(:all).once.and_return([Price.new(:price=> 100), Price.new(:price => 200)])
+      get :index, {:format => :json, :product_id => 1}
+      expect(response.status).to eq(200)
+
     end
+
   end
 end
